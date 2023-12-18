@@ -154,7 +154,7 @@ resource "aws_instance" "poc_screena" {
     Name = "poc_screena_aws_instance_test_client_db"
   }
 
-  iam_instance_profile = aws_iam_role.session_manager_role.name
+  iam_instance_profile = aws_iam_instance_profile.session_manager_profile.name
 }
 
 

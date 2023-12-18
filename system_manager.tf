@@ -1,56 +1,76 @@
-resource "aws_vpc_endpoint" "ec2" {
-  vpc_id       = aws_vpc.main.id
-  service_name = "com.amazonaws.region.ec2"
-}
+# resource "aws_vpc_endpoint" "ec2" {
+#   vpc_id       = aws_vpc.poc_screena.id
+#   service_name = "com.amazonaws.region.ec2"
+# }
 
-resource "aws_vpc_endpoint" "ec2messages" {
-  vpc_id       = aws_vpc.main.id
-  service_name = "com.amazonaws.region.ec2messages"
-}
+# resource "aws_vpc_endpoint" "ec2messages" {
+#   vpc_id       = aws_vpc.poc_screena.id
+#   service_name = "com.amazonaws.region.ec2messages"
+# }
 
-resource "aws_vpc_endpoint" "ssm" {
-  vpc_id       = aws_vpc.main.id
-  service_name = "com.amazonaws.region.ssm"
-}
+# resource "aws_vpc_endpoint" "ssm" {
+#   vpc_id       = aws_vpc.poc_screena.id
+#   service_name = "com.amazonaws.region.ssm"
+# }
 
-resource "aws_iam_policy" "session_manager_policy" {
-  name        = "session_manager_policy"
-  path        = "/"
+# resource "aws_iam_policy" "session_manager_policy" {
+#   name        = "session_manager_policy"
+#   path        = "/"
 
-  policy = jsonencode({
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Action = [
+#           "ssm:CreateSession",
+#           "ssm:StartSession",
+#           "ssm:TerminateSession",
+#         ]
+#         Effect   = "Allow"
+#         Resource = "*"
+#       },
+#     ]
+#   })
+# }
+
+//data "aws_iam_policy_document" "session_manager_policy_document" {
+//  statement {
+//    actions = ["sts:AssumeRole"]
+//
+//    principals {
+//      type        = "SERVICE"
+//      identifiers = [
+//        "com.amazonaws.region.ec2",
+//        "com.amazonaws.region.ec2messages",
+//        "com.amazonaws.region.ssm"
+//      ]
+//    }
+//  }
+//}
+
+resource "aws_iam_role" "session_manager_role" {
+  name = "session_manager_role"
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action = [
-          "ssm:CreateSession",
-          "ssm:StartSession",
-          "ssm:TerminateSession",
-        ]
-        Effect   = "Allow"
-        Resource = "*"
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = [
+            "ec2.amazonaws.com",
+            "ssm.amazonaws.com",
+        ]  
+        }
       },
     ]
   })
 }
 
-data "aws_iam_policy_document" "session_manager_policy_document" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = [
-        "com.amazonaws.region.ec2",
-        "com.amazonaws.region.ec2messages",
-        "com.amazonaws.region.ssm"
-      ]
-    }
-  }
-}
-
-resource "aws_iam_role" "session_manager_role" {
-  name = "session_manager_role"
-  assume_role_policy = data.aws_iam_policy_document.session_manager_policy_document.json
+resource "aws_iam_instance_profile" "session_manager_profile" {
+  name = "session_manager_profile"
+  role = aws_iam_role.session_manager_role.name
 }
 
 resource "aws_iam_policy_attachment" "session_manager_policy_attachment" {
