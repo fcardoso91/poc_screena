@@ -130,19 +130,19 @@ resource "aws_subnet" "c" {
 #  owners = ["099720109477"] # Canonical
 #}
 
-data "aws_ami" "ubuntu" {
+data "aws_ami" "redhat" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["RHEL-8.*_HVM_GA*"]
+    values = ["CIS Amazon Linux 2 Benchmark - Level 1 ARM - v05*"]
   }
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["679593333241"] # Canonical
 }
 
 resource "aws_network_interface" "primary" {
@@ -155,7 +155,7 @@ resource "aws_network_interface" "primary" {
 }
 
 resource "aws_instance" "poc_screena" {
-  ami           = data.aws_ami.ubuntu.id
+  ami           = data.aws_ami.redhat.id
   instance_type = "t3.medium"
   key_name      = aws_key_pair.poc_screena.key_name
   user_data_replace_on_change = true
