@@ -135,7 +135,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["RHEL-8.*_HVM_GA*"]
   }
   filter {
     name   = "virtualization-type"
