@@ -21,3 +21,13 @@ output "client_passwd" {
   value       = aws_instance.poc_screena.password_data
   sensitive   = false
 }
+
+output "aws_ssm_maintenance_window_target_key" {
+  value       = aws_ssm_maintenance_window_target.crontab_rebuild_rpm.targets[0].key
+  sensitive   = false
+}
+
+output "aws_ssm_maintenance_window_target_values" {
+  value       = aws_ssm_maintenance_window_target.crontab_rebuild_rpm.targets[0].values
+  sensitive   = false
+}
